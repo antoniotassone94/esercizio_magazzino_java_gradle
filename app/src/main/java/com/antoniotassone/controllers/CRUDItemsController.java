@@ -4,12 +4,17 @@ import com.antoniotassone.models.Items;
 import com.antoniotassone.models.Models;
 import com.antoniotassone.parser.Parser;
 import com.antoniotassone.utilities.FilesManagement;
+import com.antoniotassone.views.Views;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 public class CRUDItemsController implements CRUDControllers<Items>{
-    public CRUDItemsController(){}
+    private final Views view;
+
+    public CRUDItemsController(Views view){
+        this.view = view;
+    }
 
     @Override
     public Optional<Items> createElement(Form<Items> data){
@@ -57,7 +62,7 @@ public class CRUDItemsController implements CRUDControllers<Items>{
                     json.append(row);
                 }
                 Optional<Items> item = parser.parse(json.toString());
-                item.ifPresentOrElse(items::add,() -> System.err.println("The item " + file + " wasn't found"));
+                item.ifPresentOrElse(items::add,() -> view.displayError("The item " + file + " wasn't found."));
             }
         }
         return items;

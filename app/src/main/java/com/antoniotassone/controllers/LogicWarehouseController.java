@@ -30,7 +30,7 @@ public class LogicWarehouseController implements LogicControllers{
         if(warehouse != null){
             throw new ArchiveAlreadyLoadedException();
         }
-        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
+        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
         List<Warehouses> warehouses = warehouseControllers.findAll(new WarehouseParser());
         if(warehouses.size() != 1){
             throw new ArchiveNotLoadedException();
@@ -54,13 +54,13 @@ public class LogicWarehouseController implements LogicControllers{
         if(warehouse == null){
             throw new ArchiveNotLoadedException();
         }
-        CRUDControllers<Items> itemControllers = new CRUDItemsController();
+        CRUDControllers<Items> itemControllers = new CRUDItemsController(view);
         Optional<Items> item = itemControllers.createElement(dataItem);
         if(item.isEmpty()){
             return false;
         }
         if(warehouse.addItem(item.get(),0)){
-            CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
+            CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
             if(warehouseControllers.updateElement(warehouse)){
                 return view.addRow(item.get(),0);
             }
@@ -78,9 +78,9 @@ public class LogicWarehouseController implements LogicControllers{
             throw new ArchiveNotLoadedException();
         }
         if(warehouse.removeItem(new Items(item))){
-            CRUDControllers<Items> itemControllers = new CRUDItemsController();
+            CRUDControllers<Items> itemControllers = new CRUDItemsController(view);
             if(itemControllers.removeElement(new Items(item))){
-                CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
+                CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
                 if(warehouseControllers.updateElement(warehouse)){
                     return view.deleteRow(new Items(item));
                 }
@@ -103,7 +103,7 @@ public class LogicWarehouseController implements LogicControllers{
         long newQuantity = actualQuantity + quantity;
         if(warehouse.removeItem(new Items(item))){
             if(warehouse.addItem(new Items(item),newQuantity)){
-                CRUDControllers<Variations> variationsController = new CRUDVariationsController();
+                CRUDControllers<Variations> variationsController = new CRUDVariationsController(view);
                 Form<Variations> data = new VariationsForm(new Entrances(item,new GregorianCalendar(),quantity));
                 Optional<Variations> newVariation = variationsController.createElement(data);
                 if(newVariation.isEmpty()){
@@ -111,7 +111,7 @@ public class LogicWarehouseController implements LogicControllers{
                 }
                 try{
                     if(warehouse.addVariation(newVariation.get())){
-                        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
+                        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
                         return warehouseControllers.updateElement(warehouse);
                     }
                     return false;
@@ -140,7 +140,7 @@ public class LogicWarehouseController implements LogicControllers{
         }
         if(warehouse.removeItem(new Items(item))){
             if(warehouse.addItem(new Items(item),newQuantity)){
-                CRUDControllers<Variations> variationsController = new CRUDVariationsController();
+                CRUDControllers<Variations> variationsController = new CRUDVariationsController(view);
                 Form<Variations> data = new VariationsForm(new Exits(item,new GregorianCalendar(),quantity));
                 Optional<Variations> newVariation = variationsController.createElement(data);
                 if(newVariation.isEmpty()){
@@ -148,7 +148,7 @@ public class LogicWarehouseController implements LogicControllers{
                 }
                 try{
                     if(warehouse.addVariation(newVariation.get())){
-                        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
+                        CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
                         return warehouseControllers.updateElement(warehouse);
                     }
                     return false;

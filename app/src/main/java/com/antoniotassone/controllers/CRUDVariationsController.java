@@ -4,12 +4,17 @@ import com.antoniotassone.models.Models;
 import com.antoniotassone.models.Variations;
 import com.antoniotassone.parser.Parser;
 import com.antoniotassone.utilities.FilesManagement;
+import com.antoniotassone.views.Views;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 public class CRUDVariationsController implements CRUDControllers<Variations>{
-    public CRUDVariationsController(){}
+    private final Views view;
+
+    public CRUDVariationsController(Views view){
+        this.view = view;
+    }
 
     @Override
     public Optional<Variations> createElement(Form<Variations> data){
@@ -57,7 +62,7 @@ public class CRUDVariationsController implements CRUDControllers<Variations>{
                     json.append(row);
                 }
                 Optional<Variations> variation = parser.parse(json.toString());
-                variation.ifPresentOrElse(variations::add,() -> System.err.println("The variation " + file + " wasn't found"));
+                variation.ifPresentOrElse(variations::add,() -> view.displayError("The variation " + file + " wasn't found."));
             }
         }
         return variations;

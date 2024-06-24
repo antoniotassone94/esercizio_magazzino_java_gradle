@@ -4,12 +4,17 @@ import com.antoniotassone.models.Models;
 import com.antoniotassone.models.Warehouses;
 import com.antoniotassone.parser.Parser;
 import com.antoniotassone.utilities.FilesManagement;
+import com.antoniotassone.views.Views;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Optional;
 
 public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
-    public CRUDWarehousesController(){}
+    private final Views view;
+
+    public CRUDWarehousesController(Views view){
+        this.view = view;
+    }
 
     @Override
     public Optional<Warehouses> createElement(Form<Warehouses> data){
@@ -47,7 +52,7 @@ public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
                     json.append(row);
                 }
                 Optional<Warehouses> warehouse = parser.parse(json.toString());
-                warehouse.ifPresentOrElse(warehouses::add,() -> System.err.println("The warehouse " + file + " wasn't found"));
+                warehouse.ifPresentOrElse(warehouses::add,() -> view.displayError("The warehouse " + file + " wasn't found."));
             }
         }
         return warehouses;
