@@ -31,9 +31,9 @@ public class EngineCommandsImpl implements EngineCommands{
         try{
             Form<Items> form = view.readNewItem();
             if(controller.addItemToWarehouse(form)){
-                view.displayInfo("item added to warehouse");
+                view.displayInfo("The item created correctly and it has added to warehouse");
             }else{
-                view.displayError("item not added to warehouse");
+                view.displayError("Error while creating the item, it hasn't added to warehouse");
             }
         }catch(ArchiveNotLoadedException | ItemNotValidException exception){
             exception.printStackTrace();

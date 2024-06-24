@@ -4,6 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 public abstract class GeneralView{
+    public GeneralView(){}
+
     public void printEventLog(ActionEvent actionEvent,Button button){
         String className = actionEvent.getSource().getClass().getName();
         String[] details = className.split("[.]");

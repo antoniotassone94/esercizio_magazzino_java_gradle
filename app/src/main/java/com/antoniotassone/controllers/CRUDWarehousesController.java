@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
+    public CRUDWarehousesController(){}
+
     @Override
     public Optional<Warehouses> createElement(Form<Warehouses> data){
         return Optional.empty();

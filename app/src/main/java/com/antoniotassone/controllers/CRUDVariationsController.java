@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public class CRUDVariationsController implements CRUDControllers<Variations>{
+    public CRUDVariationsController(){}
+
     @Override
     public Optional<Variations> createElement(Form<Variations> data){
         if(data == null){
