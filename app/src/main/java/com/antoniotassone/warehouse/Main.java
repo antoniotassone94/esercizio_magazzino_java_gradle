@@ -33,6 +33,11 @@ public class Main extends Application{
     }
 
     public static void main(String[] args){
+        //start the program with the graphical interface javafx
         Application.launch(args);
+
+        //start the program with the user interface by console
+        //ConsoleView view = new ConsoleView();
+        //view.mainExecution();
     }
 }

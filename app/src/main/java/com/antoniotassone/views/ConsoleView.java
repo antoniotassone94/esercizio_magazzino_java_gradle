@@ -10,6 +10,9 @@ import com.antoniotassone.models.Items;
 import com.antoniotassone.warehouse.Commands;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -18,18 +21,33 @@ public class ConsoleView implements Views{
     private LogicControllers controller;
     private boolean exit;
     private final Scanner in;
+    private final List<WarehouseTableRows> table;
 
     public ConsoleView(){
         try{
             engine = new EngineImpl(this);
-            controller = engine.getController();
         }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException | ItemNotValidException exception){
             exception.printStackTrace();
             engine = null;
-            controller = null;
         }
         exit = false;
         in = new Scanner(System.in);
+        table = new LinkedList<>();
+        if(engine != null){
+            controller = engine.getController();
+            Map<Items,Long> warehouse;
+            try{
+                warehouse = controller.getFullWarehouse().getItems();
+            }catch(ArchiveNotLoadedException exception){
+                exception.printStackTrace();
+                warehouse = null;
+            }
+            if(warehouse != null){
+                for(Items item:warehouse.keySet()){
+                    table.add(new WarehouseTableRows(new Items(item),warehouse.get(item)));
+                }
+            }
+        }
     }
 
     @Override
@@ -50,18 +68,32 @@ public class ConsoleView implements Views{
 
     @Override
     public Form<Items> readNewItem(){
-        Optional<Items> item = this.readItemData();
+        Optional<Items> item = readItemData();
         return item.map(ItemsForm::new).orElse(null);
     }
 
     @Override
     public boolean addRow(Items item,long quantity){
-        return false;
+        if(item == null || quantity < 0){
+            return false;
+        }
+        return table.add(new WarehouseTableRows(item,quantity));
     }
 
     @Override
     public boolean deleteRow(Items item){
-        return false;
+        if(item == null){
+            return false;
+        }
+        int i = 0;
+        while(i < table.size() && !table.get(i).getItem().equals(item)){
+            i++;
+        }
+        if(i >= table.size()){
+            return false;
+        }
+        long quantity = table.get(i).getQuantity();
+        return table.remove(new WarehouseTableRows(item,quantity));
     }
 
     public void printMenu(){
@@ -82,7 +114,7 @@ public class ConsoleView implements Views{
             System.err.println("Error during the execution of the command.");
             return;
         }
-        String string = this.getInputString("Choose a number write it on the console:");
+        String string = getInputString("Choose a number write it on the console:");
         int number;
         try{
             number = Integer.parseInt(string);
@@ -111,27 +143,28 @@ public class ConsoleView implements Views{
                 engine.executeCommand(Commands.DECREASE_QUANTITY);
                 break;
             case 5:
-                try{
-                    System.out.println(controller.getFullWarehouse());
-                }catch(ArchiveNotLoadedException exception){
-                    exception.printStackTrace();
+                System.out.println("             Print of full warehouse");
+                System.out.println("-------------------------------------------------");
+                for(WarehouseTableRows row:table){
+                    System.out.println("Item: " + row.getItem() + " - quantity: " + row.getQuantity());
                 }
+                System.out.println("-------------------------------------------------");
                 break;
             case 0:
                 exit = true;
-                this.displayInfo("Thank you for using this application.");
+                System.out.println("Thank you for using this application.");
                 break;
             default:
-                this.displayError("The command doesn't exist.");
+                System.err.println("The command doesn't exist.");
                 break;
         }
-        this.getInputString("Press ENTER to continue.");
+        getInputString("Press ENTER to continue.");
     }
 
     public void mainExecution(){
         while(!exit){
-            this.printMenu();
-            this.executeCommand();
+            printMenu();
+            executeCommand();
         }
     }
 
@@ -141,10 +174,10 @@ public class ConsoleView implements Views{
         System.out.println("Insert description:");
         String description = in.nextLine();
         System.out.println("Insert price:");
+        String priceString = in.nextLine();
         double price;
         try{
-            price = in.nextDouble();
-            in.nextLine();
+            price = Double.parseDouble(priceString);
         }catch(NumberFormatException exception){
             return Optional.empty();
         }
