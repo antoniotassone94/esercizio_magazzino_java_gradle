@@ -2,8 +2,11 @@ package com.antoniotassone.views;
 
 import com.antoniotassone.controllers.Form;
 import com.antoniotassone.controllers.ItemsForm;
+import com.antoniotassone.controllers.LogicControllers;
+import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
+import com.antoniotassone.exceptions.ArchiveNotLoadedException;
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
-import com.antoniotassone.models.Warehouses;
 import com.antoniotassone.warehouse.Commands;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
@@ -11,31 +14,22 @@ import java.util.Optional;
 import java.util.Scanner;
 
 public class ConsoleView implements Views{
-    private final Engine engine;
+    private Engine engine;
+    private LogicControllers controller;
     private boolean exit;
     private final Scanner in;
 
     public ConsoleView(){
-        engine = new EngineImpl(this);
+        try{
+            engine = new EngineImpl(this);
+            controller = engine.getController();
+        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException exception){
+            exception.printStackTrace();
+            engine = null;
+            controller = null;
+        }
         exit = false;
         in = new Scanner(System.in);
-    }
-
-    @Override
-    public Optional<Items> readItemData(){
-        System.out.println("Insert name:");
-        String name = in.nextLine();
-        System.out.println("Insert description:");
-        String description = in.nextLine();
-        System.out.println("Insert price:");
-        double price;
-        try{
-            price = in.nextDouble();
-            in.nextLine();
-        }catch(NumberFormatException exception){
-            return Optional.empty();
-        }
-        return Optional.of(new Items(name,description,price));
     }
 
     @Override
@@ -61,8 +55,13 @@ public class ConsoleView implements Views{
     }
 
     @Override
-    public void displayWarehouse(Warehouses warehouse){
-        System.out.println(warehouse);
+    public boolean addRow(Items item,long quantity){
+        return false;
+    }
+
+    @Override
+    public boolean deleteRow(Items item){
+        return false;
     }
 
     public void printMenu(){
@@ -79,6 +78,10 @@ public class ConsoleView implements Views{
     }
 
     public void executeCommand(){
+        if(engine == null || controller == null){
+            System.err.println("Error during the execution of the command.");
+            return;
+        }
         String string = this.getInputString("Choose a number write it on the console:");
         int number;
         try{
@@ -91,7 +94,15 @@ public class ConsoleView implements Views{
                 engine.executeCommand(Commands.CREATE_ITEM);
                 break;
             case 2:
-                engine.executeCommand(Commands.DELETE_ITEM);
+                try{
+                    if(controller.removeItemFromWarehouse(null)){
+                        System.out.println("Item deleted successfully");
+                    }else{
+                        System.err.println("Item could not be removed");
+                    }
+                }catch(ArchiveNotLoadedException | ItemNotValidException exception){
+                    exception.printStackTrace();
+                }
                 break;
             case 3:
                 engine.executeCommand(Commands.INCREASE_QUANTITY);
@@ -100,7 +111,11 @@ public class ConsoleView implements Views{
                 engine.executeCommand(Commands.DECREASE_QUANTITY);
                 break;
             case 5:
-                engine.executeCommand(Commands.PRINT_FULL_WAREHOUSE);
+                try{
+                    System.out.println(controller.getFullWarehouse());
+                }catch(ArchiveNotLoadedException exception){
+                    exception.printStackTrace();
+                }
                 break;
             case 0:
                 exit = true;
@@ -118,5 +133,21 @@ public class ConsoleView implements Views{
             this.printMenu();
             this.executeCommand();
         }
+    }
+
+    private Optional<Items> readItemData(){
+        System.out.println("Insert name:");
+        String name = in.nextLine();
+        System.out.println("Insert description:");
+        String description = in.nextLine();
+        System.out.println("Insert price:");
+        double price;
+        try{
+            price = in.nextDouble();
+            in.nextLine();
+        }catch(NumberFormatException exception){
+            return Optional.empty();
+        }
+        return Optional.of(new Items(name,description,price));
     }
 }

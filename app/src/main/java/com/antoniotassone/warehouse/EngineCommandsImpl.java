@@ -15,15 +15,15 @@ public class EngineCommandsImpl implements EngineCommands{
     private final Views view;
     private final LogicControllers controller;
 
-
-    public EngineCommandsImpl(Views view){
+    public EngineCommandsImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException{
         this.view = view;
-        controller = new LogicWarehouseController();
-        try{
-            controller.loadArchive();
-        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException exception){
-            exception.printStackTrace();
-        }
+        controller = new LogicWarehouseController(view);
+        controller.loadArchive();
+    }
+
+    @Override
+    public LogicControllers getController(){
+        return controller;
     }
 
     @Override
@@ -42,28 +42,9 @@ public class EngineCommandsImpl implements EngineCommands{
     }
 
     @Override
-    public void deleteItem(){
-        try{
-            Optional<Items> item = view.readItemData();
-            if(item.isPresent()){
-                if(controller.removeItemFromWarehouse(new Items(item.get()))){
-                    view.displayInfo("item deleted from warehouse");
-                }else{
-                    view.displayError("item not deleted from warehouse");
-                }
-            }else{
-                view.displayError("item not found");
-            }
-        }catch(ArchiveNotLoadedException | ItemNotValidException exception){
-            exception.printStackTrace();
-            view.displayError(exception.getMessage());
-        }
-    }
-
-    @Override
     public void increaseQuantity(){
         try{
-            Optional<Items> item = view.readItemData();
+            Optional<Items> item = Optional.empty();// view.readItemData();
             if(item.isPresent()){
                 String quantityRead = view.getInputString("Insert the quantity:");
                 long quantity;
@@ -89,7 +70,7 @@ public class EngineCommandsImpl implements EngineCommands{
     @Override
     public void decreaseQuantity(){
         try{
-            Optional<Items> item = view.readItemData();
+            Optional<Items> item = Optional.empty(); //view.readItemData();
             if(item.isPresent()){
                 String quantityRead = view.getInputString("Insert the quantity:");
                 long quantity;
@@ -107,16 +88,6 @@ public class EngineCommandsImpl implements EngineCommands{
                 view.displayError("item not found");
             }
         }catch(ArchiveNotLoadedException | ItemNotValidException | QuantityNotSufficientException exception){
-            exception.printStackTrace();
-            view.displayError(exception.getMessage());
-        }
-    }
-
-    @Override
-    public void printFullWarehouse(){
-        try{
-            view.displayWarehouse(controller.getFullWarehouse());
-        }catch(ArchiveNotLoadedException exception){
             exception.printStackTrace();
             view.displayError(exception.getMessage());
         }

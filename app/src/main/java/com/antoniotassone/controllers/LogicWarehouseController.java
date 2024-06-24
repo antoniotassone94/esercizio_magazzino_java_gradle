@@ -11,14 +11,17 @@ import com.antoniotassone.models.Items;
 import com.antoniotassone.models.Variations;
 import com.antoniotassone.models.Warehouses;
 import com.antoniotassone.parser.WarehouseParser;
+import com.antoniotassone.views.Views;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 
 public class LogicWarehouseController implements LogicControllers{
+    private final Views view;
     private Warehouses warehouse;
 
-    public LogicWarehouseController(){
+    public LogicWarehouseController(Views view){
+        this.view = view;
         warehouse = null;
     }
 
@@ -58,7 +61,10 @@ public class LogicWarehouseController implements LogicControllers{
         }
         if(warehouse.addItem(item.get(),0)){
             CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
-            return warehouseControllers.updateElement(warehouse);
+            if(warehouseControllers.updateElement(warehouse)){
+                return view.addRow(item.get(),0);
+            }
+            return false;
         }
         return false;
     }
@@ -71,11 +77,14 @@ public class LogicWarehouseController implements LogicControllers{
         if(warehouse == null){
             throw new ArchiveNotLoadedException();
         }
-        if(warehouse.removeItem(item)){
+        if(warehouse.removeItem(new Items(item))){
             CRUDControllers<Items> itemControllers = new CRUDItemsController();
-            if(itemControllers.removeElement(item)){
+            if(itemControllers.removeElement(new Items(item))){
                 CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
-                return warehouseControllers.updateElement(warehouse);
+                if(warehouseControllers.updateElement(warehouse)){
+                    return view.deleteRow(new Items(item));
+                }
+                return false;
             }
             return false;
         }

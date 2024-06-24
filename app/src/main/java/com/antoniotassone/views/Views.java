@@ -2,12 +2,8 @@ package com.antoniotassone.views;
 
 import com.antoniotassone.controllers.Form;
 import com.antoniotassone.models.Items;
-import com.antoniotassone.models.Warehouses;
-import java.util.Optional;
 
 public interface Views{
-    Optional<Items> readItemData();
-
     void displayInfo(String message);
 
     void displayError(String message);
@@ -16,5 +12,7 @@ public interface Views{
 
     Form<Items> readNewItem();
 
-    void displayWarehouse(Warehouses warehouse);
+    boolean addRow(Items item,long quantity);
+
+    boolean deleteRow(Items item);
 }

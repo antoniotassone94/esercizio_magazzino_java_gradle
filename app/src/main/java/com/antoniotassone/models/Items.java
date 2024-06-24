@@ -1,48 +1,73 @@
 package com.antoniotassone.models;
 
 import com.antoniotassone.utilities.IdentifierManagement;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
 import java.io.Serial;
 import java.io.Serializable;
 
 public class Items implements Models<Items>,Cloneable,Serializable,Comparable<Items>{
     @Serial
     private static final long serialVersionUID = 1L;
-    private final String itemId;
-    private final String name;
-    private final String description;
-    private final double price;
+    private final StringProperty itemId;
+    private final StringProperty name;
+    private final StringProperty description;
+    private final DoubleProperty price;
+
 
     public Items(String name,String description,double price){
-        this.itemId = IdentifierManagement.createIdentifier(24);
-        this.name = name;
-        this.description = description;
-        this.price = price;
+        this.itemId = new SimpleStringProperty(IdentifierManagement.createIdentifier(24));
+        this.name = new SimpleStringProperty(name);
+        this.description = new SimpleStringProperty(description);
+        this.price = new SimpleDoubleProperty(price);
     }
 
     public Items(String itemId,String name,String description,double price){
-        this.itemId = itemId;
-        this.name = name;
-        this.description = description;
-        this.price = price;
+        this.itemId = new SimpleStringProperty(itemId);
+        this.name = new SimpleStringProperty(name);
+        this.description = new SimpleStringProperty(description);
+        this.price = new SimpleDoubleProperty(price);
     }
 
     public Items(Items original){
-        this.itemId = original.itemId;
-        this.name = original.name;
-        this.description = original.description;
-        this.price = original.price;
+        this.itemId = new SimpleStringProperty(original.itemId.get());
+        this.name = new SimpleStringProperty(original.name.get());
+        this.description = new SimpleStringProperty(original.description.get());
+        this.price = new SimpleDoubleProperty(original.price.get());
     }
 
     public String getItemId(){
+        return itemId.get();
+    }
+
+    public StringProperty itemIdProperty(){
         return itemId;
     }
 
     public String getName(){
+        return name.get();
+    }
+
+    public StringProperty nameProperty(){
         return name;
     }
 
     public String getDescription(){
+        return description.get();
+    }
+
+    public StringProperty descriptionProperty(){
         return description;
+    }
+
+    public double getPrice(){
+        return price.get();
+    }
+
+    public DoubleProperty priceProperty(){
+        return price;
     }
 
     @Override
@@ -54,10 +79,10 @@ public class Items implements Models<Items>,Cloneable,Serializable,Comparable<It
     @Override
     public String toString(){
         String output = "{";
-        output += "\"itemId\":\"" + itemId + "\",";
-        output += "\"name\":\"" + name + "\",";
-        output += "\"description\":\"" + description + "\",";
-        output += "\"price\":" + price;
+        output += "\"itemId\":\"" + itemId.get() + "\",";
+        output += "\"name\":\"" + name.get() + "\",";
+        output += "\"description\":\"" + description.get() + "\",";
+        output += "\"price\":" + price.get();
         output += "}";
         return output;
     }
@@ -74,12 +99,12 @@ public class Items implements Models<Items>,Cloneable,Serializable,Comparable<It
             return false;
         }
         Items other = (Items)(obj);
-        return itemId.equals(other.itemId);
+        return itemId.get().equals(other.itemId.get());
     }
 
     @Override
     public int hashCode(){
-        return itemId.hashCode();
+        return itemId.get().hashCode();
     }
 
     @Override
@@ -100,6 +125,6 @@ public class Items implements Models<Items>,Cloneable,Serializable,Comparable<It
         if(this.equals(o)){
             return 0;
         }
-        return name.compareTo(o.name);
+        return name.get().compareTo(o.name.get());
     }
 }

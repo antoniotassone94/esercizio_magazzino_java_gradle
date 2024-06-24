@@ -1,6 +1,9 @@
 package com.antoniotassone.warehouse;
 
-@FunctionalInterface
+import com.antoniotassone.controllers.LogicControllers;
+
 public interface Engine{
+    LogicControllers getController();
+
     void executeCommand(Commands command);
 }

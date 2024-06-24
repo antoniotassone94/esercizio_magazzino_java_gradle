@@ -1,13 +1,13 @@
 package com.antoniotassone.warehouse;
 
-public interface EngineCommands{
-    void createItem();
+import com.antoniotassone.controllers.LogicControllers;
 
-    void deleteItem();
+public interface EngineCommands{
+    LogicControllers getController();
+
+    void createItem();
 
     void increaseQuantity();
 
     void decreaseQuantity();
-
-    void printFullWarehouse();
 }
