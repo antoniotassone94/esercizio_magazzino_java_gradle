@@ -5,11 +5,14 @@ import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.exceptions.QuantityNotSufficientException;
 import com.antoniotassone.exceptions.VariationNotValidException;
+import com.antoniotassone.models.DataModel;
 import com.antoniotassone.models.Entrances;
 import com.antoniotassone.models.Exits;
 import com.antoniotassone.models.Items;
 import com.antoniotassone.models.Variations;
 import com.antoniotassone.models.Warehouses;
+import com.antoniotassone.parser.ItemParser;
+import com.antoniotassone.parser.VariationParser;
 import com.antoniotassone.parser.WarehouseParser;
 import com.antoniotassone.views.Views;
 import java.util.GregorianCalendar;
@@ -18,32 +21,36 @@ import java.util.Optional;
 
 public class LogicWarehouseController implements LogicControllers{
     private final Views view;
-    private Warehouses warehouse;
+    private DataModel model;
 
     public LogicWarehouseController(Views view){
         this.view = view;
-        warehouse = null;
+        model = null;
     }
 
     @Override
     public void loadArchive() throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException{
-        if(warehouse != null){
+        if(model != null){
             throw new ArchiveAlreadyLoadedException();
         }
         CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
+        CRUDControllers<Items> itemsControllers = new CRUDItemsController(view);
+        CRUDControllers<Variations> variationsControllers = new CRUDVariationsController(view);
         List<Warehouses> warehouses = warehouseControllers.findAll(new WarehouseParser());
-        if(warehouses.size() != 1){
+        List<Items> items = itemsControllers.findAll(new ItemParser());
+        List<Variations> variations = variationsControllers.findAll(new VariationParser());
+        if(warehouses.size() != 1 && items != null && variations != null){
             throw new ArchiveNotLoadedException();
         }
-        warehouse = new Warehouses(warehouses.getFirst());
+        model = new DataModel(warehouses.getFirst(),items,variations);
     }
 
     @Override
     public Warehouses getFullWarehouse() throws ArchiveNotLoadedException{
-        if(warehouse == null){
+        if(model == null){
             throw new ArchiveNotLoadedException();
         }
-        return new Warehouses(warehouse);
+        return model.getWarehouse();
     }
 
     @Override
@@ -51,7 +58,7 @@ public class LogicWarehouseController implements LogicControllers{
         if(dataItem == null){
             throw new ItemNotValidException("The item is null and it can't be processed.");
         }
-        if(warehouse == null){
+        if(model == null){
             throw new ArchiveNotLoadedException();
         }
         CRUDControllers<Items> itemControllers = new CRUDItemsController(view);
@@ -59,9 +66,9 @@ public class LogicWarehouseController implements LogicControllers{
         if(item.isEmpty()){
             return false;
         }
-        if(warehouse.addItem(item.get(),0)){
+        if(model.addItem(item.get(),0)){
             CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
-            if(warehouseControllers.updateElement(warehouse)){
+            if(warehouseControllers.updateElement(model.getWarehouse())){
                 return view.addRow(item.get(),0);
             }
             return false;
@@ -74,14 +81,14 @@ public class LogicWarehouseController implements LogicControllers{
         if(item == null){
             throw new ItemNotValidException("The item is null and it can't be processed.");
         }
-        if(warehouse == null){
+        if(model == null){
             throw new ArchiveNotLoadedException();
         }
-        if(warehouse.removeItem(new Items(item))){
+        if(model.removeItem(new Items(item))){
             CRUDControllers<Items> itemControllers = new CRUDItemsController(view);
             if(itemControllers.removeElement(new Items(item))){
                 CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
-                if(warehouseControllers.updateElement(warehouse)){
+                if(warehouseControllers.updateElement(model.getWarehouse())){
                     return view.deleteRow(new Items(item));
                 }
                 return false;
@@ -96,13 +103,13 @@ public class LogicWarehouseController implements LogicControllers{
         if(item == null || quantity <= 0){
             throw new ItemNotValidException("The item is null and it can't be processed.");
         }
-        if(warehouse == null){
+        if(model == null){
             throw new ArchiveNotLoadedException();
         }
-        long actualQuantity = warehouse.getQuantity(item);
+        long actualQuantity = model.getQuantity(item);
         long newQuantity = actualQuantity + quantity;
-        if(warehouse.removeItem(new Items(item))){
-            if(warehouse.addItem(new Items(item),newQuantity)){
+        if(model.removeItem(new Items(item))){
+            if(model.addItem(new Items(item),newQuantity)){
                 CRUDControllers<Variations> variationsController = new CRUDVariationsController(view);
                 Form<Variations> data = new VariationsForm(new Entrances(item,new GregorianCalendar(),quantity));
                 Optional<Variations> newVariation = variationsController.createElement(data);
@@ -110,9 +117,9 @@ public class LogicWarehouseController implements LogicControllers{
                     return false;
                 }
                 try{
-                    if(warehouse.addVariation(newVariation.get())){
+                    if(model.addVariation(newVariation.get())){
                         CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
-                        return warehouseControllers.updateElement(warehouse);
+                        return warehouseControllers.updateElement(model.getWarehouse());
                     }
                     return false;
                 }catch(VariationNotValidException exception){
@@ -130,16 +137,16 @@ public class LogicWarehouseController implements LogicControllers{
         if(item == null || quantity <= 0){
             throw new ItemNotValidException("The item is null and it can't be processed.");
         }
-        if(warehouse == null){
+        if(model == null){
             throw new ArchiveNotLoadedException();
         }
-        long actualQuantity = warehouse.getQuantity(item);
+        long actualQuantity = model.getQuantity(item);
         long newQuantity = actualQuantity - quantity;
         if(newQuantity < 0){
             throw new QuantityNotSufficientException();
         }
-        if(warehouse.removeItem(new Items(item))){
-            if(warehouse.addItem(new Items(item),newQuantity)){
+        if(model.removeItem(new Items(item))){
+            if(model.addItem(new Items(item),newQuantity)){
                 CRUDControllers<Variations> variationsController = new CRUDVariationsController(view);
                 Form<Variations> data = new VariationsForm(new Exits(item,new GregorianCalendar(),quantity));
                 Optional<Variations> newVariation = variationsController.createElement(data);
@@ -147,9 +154,9 @@ public class LogicWarehouseController implements LogicControllers{
                     return false;
                 }
                 try{
-                    if(warehouse.addVariation(newVariation.get())){
+                    if(model.addVariation(newVariation.get())){
                         CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController(view);
-                        return warehouseControllers.updateElement(warehouse);
+                        return warehouseControllers.updateElement(model.getWarehouse());
                     }
                     return false;
                 }catch(VariationNotValidException exception){
