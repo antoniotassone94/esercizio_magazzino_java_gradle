@@ -3,13 +3,14 @@ package com.antoniotassone.warehouse;
 import com.antoniotassone.controllers.LogicControllers;
 import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.views.Views;
 
 public class EngineImpl implements Engine{
     private final Views view;
     private final EngineCommands commands;
 
-    public EngineImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException{
+    public EngineImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException,ItemNotValidException{
         this.view = view;
         commands = new EngineCommandsImpl(view);
     }

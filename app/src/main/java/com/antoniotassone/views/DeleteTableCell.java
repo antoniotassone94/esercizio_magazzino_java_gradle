@@ -32,10 +32,14 @@ public class DeleteTableCell implements Callback<TableColumn<WarehouseTableRows,
                 WarehouseTableRows row = getTableView().getItems().get(getIndex());
                 Items item = new Items(row.getItem());
                 try{
-                    if(controller.removeItemFromWarehouse(item)){
-                        view.displayInfo("Item deleted successfully.");
+                    if(controller != null){
+                        if(controller.removeItemFromWarehouse(item)){
+                            view.displayInfo("Item deleted successfully.");
+                        }else{
+                            view.displayError("Item could not be deleted.");
+                        }
                     }else{
-                        view.displayError("Item could not be deleted.");
+                        view.displayError("The controller is null, so the command can't be executed.");
                     }
                 }catch(ArchiveNotLoadedException | ItemNotValidException exception){
                     exception.printStackTrace();

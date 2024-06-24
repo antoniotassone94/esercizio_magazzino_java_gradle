@@ -6,16 +6,16 @@ import com.antoniotassone.controllers.LogicWarehouseController;
 import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
-import com.antoniotassone.exceptions.QuantityNotSufficientException;
+//import com.antoniotassone.exceptions.QuantityNotSufficientException;
 import com.antoniotassone.models.Items;
 import com.antoniotassone.views.Views;
-import java.util.Optional;
+//import java.util.Optional;
 
 public class EngineCommandsImpl implements EngineCommands{
     private final Views view;
     private final LogicControllers controller;
 
-    public EngineCommandsImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException{
+    public EngineCommandsImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException,ItemNotValidException{
         this.view = view;
         controller = new LogicWarehouseController(view);
         controller.loadArchive();
@@ -43,8 +43,8 @@ public class EngineCommandsImpl implements EngineCommands{
 
     @Override
     public void increaseQuantity(){
-        try{
-            Optional<Items> item = Optional.empty();// view.readItemData();
+        /*try{
+            Optional<Items> item = view.readItemData();
             if(item.isPresent()){
                 String quantityRead = view.getInputString("Insert the quantity:");
                 long quantity;
@@ -64,13 +64,13 @@ public class EngineCommandsImpl implements EngineCommands{
         }catch(ArchiveNotLoadedException | ItemNotValidException exception){
             exception.printStackTrace();
             view.displayError(exception.getMessage());
-        }
+        }*/
     }
 
     @Override
     public void decreaseQuantity(){
-        try{
-            Optional<Items> item = Optional.empty(); //view.readItemData();
+        /*try{
+            Optional<Items> item = view.readItemData();
             if(item.isPresent()){
                 String quantityRead = view.getInputString("Insert the quantity:");
                 long quantity;
@@ -90,6 +90,6 @@ public class EngineCommandsImpl implements EngineCommands{
         }catch(ArchiveNotLoadedException | ItemNotValidException | QuantityNotSufficientException exception){
             exception.printStackTrace();
             view.displayError(exception.getMessage());
-        }
+        }*/
     }
 }

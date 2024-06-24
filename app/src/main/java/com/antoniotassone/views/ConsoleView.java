@@ -23,7 +23,7 @@ public class ConsoleView implements Views{
         try{
             engine = new EngineImpl(this);
             controller = engine.getController();
-        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException exception){
+        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException | ItemNotValidException exception){
             exception.printStackTrace();
             engine = null;
             controller = null;

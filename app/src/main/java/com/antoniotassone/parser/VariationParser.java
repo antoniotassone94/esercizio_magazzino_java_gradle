@@ -1,5 +1,6 @@
 package com.antoniotassone.parser;
 
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Entrances;
 import com.antoniotassone.models.Exits;
 import com.antoniotassone.models.Items;
@@ -8,7 +9,6 @@ import com.antoniotassone.utilities.DateManagement;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.Calendar;
-import java.util.Optional;
 
 public class VariationParser implements Parser<Variations>{
     private final Parser<Items> itemParser;
@@ -18,19 +18,19 @@ public class VariationParser implements Parser<Variations>{
     }
 
     @Override
-    public Optional<Variations> parse(String json){
+    public Variations parse(String json) throws ItemNotValidException{
         if(json == null){
-            return Optional.empty();
+            throw new ItemNotValidException("The JSON object is null.");
         }
         if(json.isEmpty()){
-            return Optional.empty();
+            throw new ItemNotValidException("The JSON object is empty.");
         }
         JSONObject jsonObj;
         try{
             jsonObj = new JSONObject(json);
         }catch(JSONException exception){
             exception.printStackTrace();
-            return Optional.empty();
+            throw new ItemNotValidException("The object is not a valid JSON object.");
         }
         if(!jsonObj.keySet().contains("variationId") ||
                 !jsonObj.keySet().contains("item") ||
@@ -38,23 +38,32 @@ public class VariationParser implements Parser<Variations>{
                 !jsonObj.keySet().contains("quantity") ||
                 !jsonObj.keySet().contains("type")){
 
-            return Optional.empty();
+            throw new ItemNotValidException("The JSON object doesn't contain all the necessary keys.");
         }
-        String variationId = jsonObj.getString("variationId");
-        JSONObject itemJson = jsonObj.getJSONObject("item");
-        JSONObject date = jsonObj.getJSONObject("date");
-        long quantity = jsonObj.getLong("quantity");
-        String type = jsonObj.getString("type");
+        String variationId;
+        JSONObject itemJson;
+        JSONObject date;
+        long quantity;
+        String type;
+        try{
+            variationId = jsonObj.getString("variationId");
+            itemJson = jsonObj.getJSONObject("item");
+            date = jsonObj.getJSONObject("date");
+            quantity = jsonObj.getLong("quantity");
+            type = jsonObj.getString("type");
+        }catch(JSONException exception){
+            exception.printStackTrace();
+            throw new ItemNotValidException("The object is not a valid JSON object.");
+        }
+        if(!type.equals("entrance") && !type.equals("exit")){
+            throw new ItemNotValidException("The type of the variation of warehouse isn't valid.");
+        }
         Calendar dateTime = DateManagement.createTimestamp(date);
-        Optional<Items> item = itemParser.parse(itemJson.toString());
-        if(item.isEmpty()){
-            return Optional.empty();
-        }
+        Items item = itemParser.parse(itemJson.toString());
         if(type.equals("entrance")){
-            return Optional.of(new Entrances(variationId,item.get(),dateTime,quantity));
-        }else if(type.equals("exit")){
-            return Optional.of(new Exits(variationId,item.get(),dateTime,quantity));
+            return new Entrances(variationId,item,dateTime,quantity);
+        }else{
+            return new Exits(variationId,item,dateTime,quantity);
         }
-        return Optional.empty();
     }
 }

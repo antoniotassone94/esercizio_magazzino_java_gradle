@@ -1,20 +1,16 @@
 package com.antoniotassone.controllers;
 
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Models;
 import com.antoniotassone.models.Warehouses;
 import com.antoniotassone.parser.Parser;
 import com.antoniotassone.utilities.FilesManagement;
-import com.antoniotassone.views.Views;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Optional;
 
 public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
-    private final Views view;
-
-    public CRUDWarehousesController(Views view){
-        this.view = view;
-    }
+    public CRUDWarehousesController(){}
 
     @Override
     public Optional<Warehouses> createElement(Form<Warehouses> data){
@@ -38,7 +34,7 @@ public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
     }
 
     @Override
-    public List<Warehouses> findAll(Parser<Warehouses> parser){
+    public List<Warehouses> findAll(Parser<Warehouses> parser) throws ItemNotValidException{
         if(parser == null){
             return new LinkedList<>();
         }
@@ -51,8 +47,8 @@ public class CRUDWarehousesController implements CRUDControllers<Warehouses>{
                 for(String row:rows){
                     json.append(row);
                 }
-                Optional<Warehouses> warehouse = parser.parse(json.toString());
-                warehouse.ifPresentOrElse(warehouses::add,() -> view.displayError("The warehouse " + file + " wasn't found."));
+                Warehouses warehouse = parser.parse(json.toString());
+                warehouses.add(warehouse);
             }
         }
         return warehouses;

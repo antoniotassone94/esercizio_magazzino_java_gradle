@@ -5,6 +5,7 @@ import com.antoniotassone.controllers.ItemsForm;
 import com.antoniotassone.controllers.LogicControllers;
 import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
 import com.antoniotassone.warehouse.Commands;
 import com.antoniotassone.warehouse.Engine;
@@ -65,32 +66,38 @@ public class MainView extends GeneralView implements Views,Initializable{
     public void initialize(URL location,ResourceBundle resources){
         try{
             engine = new EngineImpl(this);
-        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException exception){
+        }catch(ArchiveAlreadyLoadedException | ArchiveNotLoadedException | ItemNotValidException exception){
             exception.printStackTrace();
-            System.exit(-1);
+            displayError(exception.getMessage());
+            engine = null;
         }
-        controller = engine.getController();
-        Map<Items,Long> warehouse = null;
-        try{
-            warehouse = controller.getFullWarehouse().getItems();
-        }catch(ArchiveNotLoadedException exception){
-            exception.printStackTrace();
-            System.exit(-1);
+        if(engine != null){
+            controller = engine.getController();
+            Map<Items,Long> warehouse;
+            try{
+                warehouse = controller.getFullWarehouse().getItems();
+            }catch(ArchiveNotLoadedException exception){
+                exception.printStackTrace();
+                displayError(exception.getMessage());
+                warehouse = null;
+            }
+            columnName.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().nameProperty());
+            columnDescription.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().descriptionProperty());
+            columnPrice.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().priceProperty().asObject());
+            columnQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
+            addButtonToTable();
+            List<WarehouseTableRows> list = new LinkedList<>();
+            if(warehouse != null){
+                for(Items item:warehouse.keySet()){
+                    list.add(new WarehouseTableRows(item,warehouse.get(item)));
+                }
+            }
+            ObservableList<WarehouseTableRows> rows = FXCollections.observableList(list);
+            tableWarehouse.getItems().clear();
+            tableWarehouse.setItems(rows);
+            tableWarehouse.getSelectionModel().setCellSelectionEnabled(true);
+            tableWarehouse.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         }
-        columnName.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().nameProperty());
-        columnDescription.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().descriptionProperty());
-        columnPrice.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().priceProperty().asObject());
-        columnQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
-        addButtonToTable();
-        List<WarehouseTableRows> list = new LinkedList<>();
-        for(Items item:warehouse.keySet()){
-            list.add(new WarehouseTableRows(item,warehouse.get(item)));
-        }
-        ObservableList<WarehouseTableRows> rows = FXCollections.observableList(list);
-        tableWarehouse.getItems().clear();
-        tableWarehouse.setItems(rows);
-        tableWarehouse.getSelectionModel().setCellSelectionEnabled(true);
-        tableWarehouse.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     @Override
@@ -153,8 +160,10 @@ public class MainView extends GeneralView implements Views,Initializable{
     }
 
     public void handleCreateItem(ActionEvent actionEvent){
-        printEventLog(actionEvent,cmdCreateItem);
-        engine.executeCommand(Commands.CREATE_ITEM);
+        if(engine != null){
+            printEventLog(actionEvent,cmdCreateItem);
+            engine.executeCommand(Commands.CREATE_ITEM);
+        }
     }
 
     public void handleViewVariationsProduct(MouseEvent mouseEvent){

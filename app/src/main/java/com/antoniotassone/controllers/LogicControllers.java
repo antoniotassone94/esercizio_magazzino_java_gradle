@@ -8,7 +8,7 @@ import com.antoniotassone.models.Items;
 import com.antoniotassone.models.Warehouses;
 
 public interface LogicControllers{
-    void loadArchive() throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException;
+    void loadArchive() throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException,ItemNotValidException;
 
     Warehouses getFullWarehouse() throws ArchiveNotLoadedException;
 

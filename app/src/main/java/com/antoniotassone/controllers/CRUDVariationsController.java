@@ -1,20 +1,16 @@
 package com.antoniotassone.controllers;
 
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Models;
 import com.antoniotassone.models.Variations;
 import com.antoniotassone.parser.Parser;
 import com.antoniotassone.utilities.FilesManagement;
-import com.antoniotassone.views.Views;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 public class CRUDVariationsController implements CRUDControllers<Variations>{
-    private final Views view;
-
-    public CRUDVariationsController(Views view){
-        this.view = view;
-    }
+    public CRUDVariationsController(){}
 
     @Override
     public Optional<Variations> createElement(Form<Variations> data){
@@ -48,7 +44,7 @@ public class CRUDVariationsController implements CRUDControllers<Variations>{
     }
 
     @Override
-    public List<Variations> findAll(Parser<Variations> parser){
+    public List<Variations> findAll(Parser<Variations> parser) throws ItemNotValidException{
         if(parser == null){
             return new LinkedList<>();
         }
@@ -61,8 +57,8 @@ public class CRUDVariationsController implements CRUDControllers<Variations>{
                 for(String row:rows){
                     json.append(row);
                 }
-                Optional<Variations> variation = parser.parse(json.toString());
-                variation.ifPresentOrElse(variations::add,() -> view.displayError("The variation " + file + " wasn't found."));
+                Variations variation = parser.parse(json.toString());
+                variations.add(variation);
             }
         }
         return variations;

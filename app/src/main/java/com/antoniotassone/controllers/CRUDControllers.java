@@ -1,5 +1,6 @@
 package com.antoniotassone.controllers;
 
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Models;
 import com.antoniotassone.parser.Parser;
 import java.util.List;
@@ -12,5 +13,5 @@ public interface CRUDControllers<T extends Models<T>>{
 
     boolean removeElement(Models<T> object);
 
-    List<T> findAll(Parser<T> parser);
+    List<T> findAll(Parser<T> parser) throws ItemNotValidException;
 }
