@@ -146,7 +146,7 @@ public class MainView extends GeneralView implements Views,Initializable{
     public boolean deleteRow(Items item){
         ObservableList<WarehouseTableRows> rows = tableWarehouse.getItems();
         int index = 0;
-        while(index < rows.size() && !rows.get(index).getItemId().equals(item.getItemId())){
+        while(index < rows.size() && !rows.get(index).getItem().getItemId().equals(item.getItemId())){
             index++;
         }
         if(index >= rows.size()){
