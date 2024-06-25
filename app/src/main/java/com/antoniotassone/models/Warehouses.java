@@ -146,6 +146,19 @@ public class Warehouses implements Models<Warehouses>,Cloneable,Serializable{
         return items.get(item);
     }
 
+    public List<Variations> getVariations(Items item) throws ItemNotValidException{
+        if(item == null){
+            throw new ItemNotValidException("The item is null and it can't be processed.");
+        }
+        List<Variations> variationsList = new LinkedList<>();
+        for(Variations variation:variations){
+            if(variation.getItem().equals(item)){
+                variationsList.add(variation.copy());
+            }
+        }
+        return variationsList;
+    }
+
     public boolean addVariation(Variations variation) throws VariationNotValidException{
         if(variation == null){
             throw new VariationNotValidException("The variation is null and it can't be processed.");

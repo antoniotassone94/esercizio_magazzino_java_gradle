@@ -4,16 +4,19 @@ import com.antoniotassone.controllers.LogicControllers;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
+import com.antoniotassone.models.Variations;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.layout.HBox;
 import javafx.util.Callback;
+import java.util.List;
 
-public class DeleteTableCell implements Callback<TableColumn<WarehouseTableRows,Void>,TableCell<WarehouseTableRows,Void>>{
+public class ActionsTableCell implements Callback<TableColumn<WarehouseTableRows,Void>,TableCell<WarehouseTableRows,Void>>{
     private final Views view;
     private final LogicControllers controller;
 
-    public DeleteTableCell(Views view,LogicControllers controller){
+    public ActionsTableCell(Views view,LogicControllers controller){
         this.view = view;
         this.controller = controller;
     }
@@ -24,10 +27,10 @@ public class DeleteTableCell implements Callback<TableColumn<WarehouseTableRows,
     }
 
     private static class InternalCell extends TableCell<WarehouseTableRows,Void>{
-        private final Button cmdDelete;
+        private final HBox container;
 
         public InternalCell(Views view,LogicControllers controller){
-            cmdDelete = new Button("Delete");
+            Button cmdDelete = new Button("Delete");
             cmdDelete.setOnAction(event -> {
                 WarehouseTableRows row = getTableView().getItems().get(getIndex());
                 Items item = new Items(row.getItem());
@@ -45,6 +48,26 @@ public class DeleteTableCell implements Callback<TableColumn<WarehouseTableRows,
                     exception.printStackTrace();
                 }
             });
+            Button cmdVariations = new Button("Variations");
+            cmdVariations.setOnAction(event -> {
+                WarehouseTableRows row = getTableView().getItems().get(getIndex());
+                Items item = new Items(row.getItem());
+                try{
+                    if(controller != null){
+                        List<Variations> variationsList = controller.getFullWarehouse().getVariations(item);
+
+
+                        System.out.println(variationsList);
+
+
+                    }else{
+                        view.displayError("The controller is null, so the command can't be executed.");
+                    }
+                }catch(ArchiveNotLoadedException | ItemNotValidException exception){
+                    exception.printStackTrace();
+                }
+            });
+            container = new HBox(cmdDelete,cmdVariations);
         }
 
         @Override
@@ -53,7 +76,7 @@ public class DeleteTableCell implements Callback<TableColumn<WarehouseTableRows,
             if(empty){
                 setGraphic(null);
             }else{
-                setGraphic(cmdDelete);
+                setGraphic(container);
             }
         }
     }

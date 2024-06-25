@@ -17,12 +17,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.input.MouseEvent;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -85,7 +83,7 @@ public class MainView extends GeneralView implements Views,Initializable{
             columnDescription.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().descriptionProperty());
             columnPrice.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().priceProperty().asObject());
             columnQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
-            addButtonToTable();
+            addButtonsToTable();
             List<WarehouseTableRows> list = new LinkedList<>();
             if(warehouse != null){
                 for(Items item:warehouse.keySet()){
@@ -95,8 +93,7 @@ public class MainView extends GeneralView implements Views,Initializable{
             ObservableList<WarehouseTableRows> rows = FXCollections.observableList(list);
             tableWarehouse.getItems().clear();
             tableWarehouse.setItems(rows);
-            tableWarehouse.getSelectionModel().setCellSelectionEnabled(true);
-            tableWarehouse.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            tableWarehouse.getSelectionModel().setCellSelectionEnabled(false);
         }
     }
 
@@ -163,14 +160,19 @@ public class MainView extends GeneralView implements Views,Initializable{
         if(engine != null){
             printEventLog(actionEvent,cmdCreateItem);
             engine.executeCommand(Commands.CREATE_ITEM);
+            resetForm();
+        }else{
+            displayError("The creation of new item failed, because the archive doesn't exist.");
         }
     }
 
-    public void handleViewVariationsProduct(MouseEvent mouseEvent){
-        System.out.println(mouseEvent);
+    private void addButtonsToTable(){
+        columnActions.setCellFactory(new ActionsTableCell(this,controller));
     }
 
-    private void addButtonToTable(){
-        columnActions.setCellFactory(new DeleteTableCell(this,controller));
+    private void resetForm(){
+        txtName.setText("");
+        txtDescription.setText("");
+        txtPrice.setText("");
     }
 }

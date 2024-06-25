@@ -24,7 +24,7 @@
          <Font size="20.0" />
       </font>
    </Label>
-    <TableView fx:id="tableWarehouse" layoutY="127.0" onMouseClicked="#handleViewVariationsProduct" prefHeight="423.0" prefWidth="800.0">
+    <TableView fx:id="tableWarehouse" layoutY="127.0" prefHeight="423.0" prefWidth="800.0">
         <columns>
             <TableColumn fx:id="columnName" prefWidth="145.0" text="Name" />
             <TableColumn fx:id="columnDescription" prefWidth="284.0" text="Description" />

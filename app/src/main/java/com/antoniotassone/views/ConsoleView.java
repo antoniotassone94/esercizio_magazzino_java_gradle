@@ -111,7 +111,7 @@ public class ConsoleView implements Views{
 
     public void executeCommand(){
         if(engine == null || controller == null){
-            System.err.println("Error during the execution of the command.");
+            System.err.println("Error during the execution of the command, because the archive doesn't exist.");
             return;
         }
         String string = getInputString("Choose a number write it on the console:");
