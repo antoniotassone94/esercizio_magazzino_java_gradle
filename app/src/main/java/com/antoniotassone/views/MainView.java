@@ -186,7 +186,7 @@ public class MainView extends GeneralView implements Views,Initializable{
     }
 
     private void addButtonsToTable(){
-        columnActions.setCellFactory(new ActionsTableCell(engine,this,this));
+        columnActions.setCellFactory(column -> new ActionsTableCell(engine,this,this));
     }
 
     private void resetForm(){

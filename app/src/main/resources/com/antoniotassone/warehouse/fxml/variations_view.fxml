@@ -14,12 +14,12 @@
         </font>
     </Label>
    <Button fx:id="cmdGoToMenu" layoutX="571.0" layoutY="22.0" mnemonicParsing="false" onAction="#handleGoToMenu" prefHeight="25.0" prefWidth="222.0" text="Back go to menu" />
-    <Label layoutX="14.0" layoutY="63.0" text="Name" />
+    <Label layoutX="14.0" layoutY="63.0" style="-fx-font-weight: bold;" text="Name:" />
    <Label fx:id="lblName" layoutX="54.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
-    <Label layoutX="259.0" layoutY="63.0" text="Description" />
-   <Label fx:id="lblDescription" layoutX="324.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
-    <Label layoutX="528.0" layoutY="63.0" text="Price" />
-   <Label fx:id="lblPrice" layoutX="560.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
+    <Label layoutX="259.0" layoutY="63.0" style="-fx-font-weight: bold;" text="Description:" />
+   <Label fx:id="lblDescription" layoutX="331.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
+    <Label layoutX="533.0" layoutY="63.0" style="-fx-font-weight: bold;" text="Price:" />
+   <Label fx:id="lblPrice" layoutX="570.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
     <TableView fx:id="tableVariations" layoutY="98.0" prefHeight="452.0" prefWidth="800.0">
         <columns>
             <TableColumn fx:id="columnDate" prefWidth="397.0" text="Date" />

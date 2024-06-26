@@ -54,34 +54,38 @@ public class Warehouses implements Models<Warehouses>,Cloneable,Serializable{
         StringBuilder output = new StringBuilder("{");
         output.append("\"warehouseId\":\"");
         output.append(warehouseId);
-        output.append("\",");
+        output.append("\",\n");
         output.append("\"name\":\"");
         output.append(name);
-        output.append("\",");
-        output.append("\"items\":[");
+        output.append("\",\n");
+        output.append("\"items\":[\n");
         int i = 0;
         for(Items item:items.keySet()){
             String itemObject = "{";
-            itemObject += "\"item\":" + item + ",";
-            itemObject += "\"quantity\":" + items.get(item);
+            itemObject += "\"item\":" + item + ",\n";
+            itemObject += "\"quantity\":" + items.get(item) + "\n";
             itemObject += "}";
             output.append(itemObject);
             if(i < (items.keySet().size() - 1)){
-                output.append(",");
+                output.append(",\n");
+            }else{
+                output.append("\n");
             }
             i++;
         }
-        output.append("],");
-        output.append("\"variations\":[");
+        output.append("],\n");
+        output.append("\"variations\":[\n");
         i = 0;
         for(Variations variation:variations){
             output.append(variation.toString());
             if(i < (variations.size() - 1)){
-                output.append(",");
+                output.append(",\n");
+            }else{
+                output.append("\n");
             }
             i++;
         }
-        output.append("]");
+        output.append("]\n");
         output.append("}");
         return output.toString();
     }

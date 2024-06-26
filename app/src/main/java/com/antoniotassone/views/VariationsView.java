@@ -60,6 +60,7 @@ public class VariationsView extends GeneralView{
             lblDescription.setText(item.getDescription());
             lblPrice.setText(String.valueOf(item.getPrice()));
             columnDate.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+            columnDate.setCellFactory(column -> new DateFormatCell());
             columnQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
             List<Variations> variations;
             try{
@@ -73,6 +74,7 @@ public class VariationsView extends GeneralView{
                 tableVariations.getItems().clear();
                 tableVariations.getItems().addAll(rows);
                 tableVariations.getSelectionModel().setCellSelectionEnabled(false);
+                tableVariations.setRowFactory(fullTable -> new RowsColoredForType());
             }
         }
     }

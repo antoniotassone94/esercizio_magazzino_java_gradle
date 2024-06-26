@@ -78,11 +78,11 @@ public class Items implements Models<Items>,Cloneable,Serializable,Comparable<It
 
     @Override
     public String toString(){
-        String output = "{";
-        output += "\"itemId\":\"" + itemId.get() + "\",";
-        output += "\"name\":\"" + name.get() + "\",";
-        output += "\"description\":\"" + description.get() + "\",";
-        output += "\"price\":" + price.get();
+        String output = "{\n";
+        output += "\"itemId\":\"" + itemId.get() + "\",\n";
+        output += "\"name\":\"" + name.get() + "\",\n";
+        output += "\"description\":\"" + description.get() + "\",\n";
+        output += "\"price\":" + price.get() + "\n";
         output += "}";
         return output;
     }

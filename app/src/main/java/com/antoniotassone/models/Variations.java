@@ -95,12 +95,12 @@ public abstract class Variations implements Models<Variations>,Serializable,Comp
 
     @Override
     public String toString(){
-        String output = "{";
-        output += "\"variationId\":\"" + variationId.get() + "\",";
-        output += "\"item\":" + item.get() + ",";
-        output += "\"date\":" + DateManagement.printTimestamp(date.get()) + ",";
-        output += "\"quantity\":" + quantity.get() + ",";
-        output += "\"type\":\"" + type.get().toString().toLowerCase() + "\"";
+        String output = "{\n";
+        output += "\"variationId\":\"" + variationId.get() + "\",\n";
+        output += "\"item\":" + item.get() + ",\n";
+        output += "\"date\":" + DateManagement.printTimestamp(date.get()) + ",\n";
+        output += "\"quantity\":" + quantity.get() + ",\n";
+        output += "\"type\":\"" + type.get().toString().toLowerCase() + "\"\n";
         output += "}";
         return output;
     }
