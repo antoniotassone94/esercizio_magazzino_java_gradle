@@ -13,4 +13,6 @@ public abstract class GeneralView{
         String console = specific + " with text \"" + button.getText() + "\" has launched an event.";
         System.out.println(console);
     }
+
+    public abstract void initializeComponents();
 }

@@ -7,7 +7,6 @@ import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
-import com.antoniotassone.warehouse.Commands;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
 import java.util.List;
@@ -123,7 +122,11 @@ public class ConsoleView implements Views{
         }
         switch(number){
             case 1:
-                engine.executeCommand(Commands.CREATE_ITEM);
+                if(engine.createNewItem()){
+                    System.out.println("Item created successfully.");
+                }else{
+                    System.err.println("Item creation failed.");
+                }
                 break;
             case 2:
                 try{
@@ -137,10 +140,14 @@ public class ConsoleView implements Views{
                 }
                 break;
             case 3:
-                engine.executeCommand(Commands.INCREASE_QUANTITY);
+
+                //implementare increaseQuantity da riga di comando
+
                 break;
             case 4:
-                engine.executeCommand(Commands.DECREASE_QUANTITY);
+
+                //implementare decreaseQuantity da riga di comando
+
                 break;
             case 5:
                 System.out.println("             Print of full warehouse");

@@ -2,12 +2,10 @@ package com.antoniotassone.views;
 
 import com.antoniotassone.controllers.Form;
 import com.antoniotassone.controllers.ItemsForm;
-import com.antoniotassone.controllers.LogicControllers;
 import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
-import com.antoniotassone.warehouse.Commands;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
 import javafx.collections.FXCollections;
@@ -31,7 +29,6 @@ import java.util.ResourceBundle;
 
 public class MainView extends GeneralView implements Views,Initializable{
     private Engine engine;
-    private LogicControllers controller;
     @FXML
     private Label lblInformation;
     @FXML
@@ -59,6 +56,9 @@ public class MainView extends GeneralView implements Views,Initializable{
 
     public MainView(){}
 
+    @Override
+    public void initializeComponents(){}
+
     @FXML
     @Override
     public void initialize(URL location,ResourceBundle resources){
@@ -70,15 +70,7 @@ public class MainView extends GeneralView implements Views,Initializable{
             engine = null;
         }
         if(engine != null){
-            controller = engine.getController();
-            Map<Items,Long> warehouse;
-            try{
-                warehouse = controller.getFullWarehouse().getItems();
-            }catch(ArchiveNotLoadedException exception){
-                exception.printStackTrace();
-                displayError(exception.getMessage());
-                warehouse = null;
-            }
+            Map<Items,Long> warehouse = engine.getFullWarehouse();
             columnName.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().nameProperty());
             columnDescription.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().descriptionProperty());
             columnPrice.setCellValueFactory(cellData -> cellData.getValue().itemProperty().get().priceProperty().asObject());
@@ -159,7 +151,11 @@ public class MainView extends GeneralView implements Views,Initializable{
     public void handleCreateItem(ActionEvent actionEvent){
         if(engine != null){
             printEventLog(actionEvent,cmdCreateItem);
-            engine.executeCommand(Commands.CREATE_ITEM);
+            if(engine.createNewItem()){
+                displayInfo("The item was created correctly.");
+            }else{
+                displayError("The item wasn't created correctly.");
+            }
             resetForm();
         }else{
             displayError("The creation of new item failed, because the archive doesn't exist.");
@@ -167,7 +163,7 @@ public class MainView extends GeneralView implements Views,Initializable{
     }
 
     private void addButtonsToTable(){
-        columnActions.setCellFactory(new ActionsTableCell(this,controller));
+        columnActions.setCellFactory(new ActionsTableCell(engine,this));
     }
 
     private void resetForm(){
