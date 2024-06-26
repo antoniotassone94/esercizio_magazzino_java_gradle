@@ -20,7 +20,7 @@
    <Label fx:id="lblDescription" layoutX="324.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
     <Label layoutX="528.0" layoutY="63.0" text="Price" />
    <Label fx:id="lblPrice" layoutX="560.0" layoutY="63.0" prefHeight="17.0" prefWidth="200.0" />
-    <TableView fx:id="tableWarehouse" layoutY="98.0" prefHeight="452.0" prefWidth="800.0">
+    <TableView fx:id="tableVariations" layoutY="98.0" prefHeight="452.0" prefWidth="800.0">
         <columns>
             <TableColumn fx:id="columnDate" prefWidth="397.0" text="Date" />
             <TableColumn fx:id="columnQuantity" prefWidth="402.0" text="Quantity" />

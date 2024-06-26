@@ -7,6 +7,7 @@ import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
+import com.antoniotassone.models.Variations;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
 import java.util.List;
@@ -93,6 +94,23 @@ public class ConsoleView implements Views{
         }
         long quantity = table.get(i).getQuantity();
         return table.remove(new WarehouseTableRows(item,quantity));
+    }
+
+    @Override
+    public boolean updateRow(Variations newVariation,long newQuantity){
+        if(newVariation == null || newQuantity < 0){
+            return false;
+        }
+        int i = 0;
+        while(i < table.size() && !table.get(i).getItem().equals(newVariation.getItem())){
+            i++;
+        }
+        if(i >= table.size()){
+            return false;
+        }
+        WarehouseTableRows row = table.get(i);
+        row.setQuantity(newQuantity);
+        return true;
     }
 
     public void printMenu(){

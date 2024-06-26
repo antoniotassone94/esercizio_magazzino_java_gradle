@@ -29,7 +29,7 @@ public class VariationsView extends GeneralView{
     @FXML
     private Label lblPrice;
     @FXML
-    private TableView<Variations> tableWarehouse;
+    private TableView<Variations> tableVariations;
     @FXML
     private TableColumn<Variations,Calendar> columnDate;
     @FXML
@@ -70,9 +70,9 @@ public class VariationsView extends GeneralView{
             }
             if(variations != null){
                 ObservableList<Variations> rows = FXCollections.observableList(variations);
-                tableWarehouse.getItems().clear();
-                tableWarehouse.getItems().addAll(rows);
-                tableWarehouse.getSelectionModel().setCellSelectionEnabled(false);
+                tableVariations.getItems().clear();
+                tableVariations.getItems().addAll(rows);
+                tableVariations.getSelectionModel().setCellSelectionEnabled(false);
             }
         }
     }
@@ -106,5 +106,15 @@ public class VariationsView extends GeneralView{
         }else{
             System.err.println("The main javafx scene hasn't been opened.");
         }
+    }
+
+    public boolean addRow(Variations newVariation){
+        if(newVariation == null){
+            return false;
+        }
+        if(tableVariations.getItems().contains(newVariation)){
+            return false;
+        }
+        return tableVariations.getItems().add(newVariation.copy());
     }
 }

@@ -119,7 +119,9 @@ public class LogicWarehouseController implements LogicControllers{
                 try{
                     if(model.addVariation(newVariation.get())){
                         CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
-                        return warehouseControllers.updateElement(model.getWarehouse());
+                        if(warehouseControllers.updateElement(model.getWarehouse())){
+                            return view.updateRow(newVariation.get().copy(),newQuantity);
+                        }
                     }
                     return false;
                 }catch(VariationNotValidException exception){
@@ -156,7 +158,9 @@ public class LogicWarehouseController implements LogicControllers{
                 try{
                     if(model.addVariation(newVariation.get())){
                         CRUDControllers<Warehouses> warehouseControllers = new CRUDWarehousesController();
-                        return warehouseControllers.updateElement(model.getWarehouse());
+                        if(warehouseControllers.updateElement(model.getWarehouse())){
+                            return view.updateRow(newVariation.get().copy(),newQuantity);
+                        }
                     }
                     return false;
                 }catch(VariationNotValidException exception){

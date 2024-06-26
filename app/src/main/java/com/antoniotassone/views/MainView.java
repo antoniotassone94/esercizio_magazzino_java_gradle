@@ -6,6 +6,7 @@ import com.antoniotassone.exceptions.ArchiveAlreadyLoadedException;
 import com.antoniotassone.exceptions.ArchiveNotLoadedException;
 import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
+import com.antoniotassone.models.Variations;
 import com.antoniotassone.warehouse.Engine;
 import com.antoniotassone.warehouse.EngineImpl;
 import javafx.collections.FXCollections;
@@ -146,6 +147,28 @@ public class MainView extends GeneralView implements Views,Initializable{
         }
         WarehouseTableRows row = tableWarehouse.getItems().get(index);
         return tableWarehouse.getItems().remove(row);
+    }
+
+    @Override
+    public boolean updateRow(Variations newVariation,long newQuantity){
+        if(newVariation == null || newQuantity < 0){
+            return false;
+        }
+        List<WarehouseTableRows> rows = tableWarehouse.getItems();
+        int index = 0;
+        while(index < rows.size() && !rows.get(index).getItem().equals(newVariation.getItem())){
+            index++;
+        }
+        if(index >= rows.size()){
+            return false;
+        }
+        rows.get(index).setQuantity(newQuantity);
+        Optional<GeneralView> variationsFXController = getManager().getFXController("variationsView");
+        if(variationsFXController.isEmpty()){
+            return false;
+        }
+        VariationsView variationsView = (VariationsView)(variationsFXController.get());
+        return variationsView.addRow(newVariation);
     }
 
     public void handleCreateItem(ActionEvent actionEvent){
