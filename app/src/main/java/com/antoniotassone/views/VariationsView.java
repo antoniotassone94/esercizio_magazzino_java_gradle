@@ -82,10 +82,10 @@ public class VariationsView extends GeneralView{
 
     public void handleGoToMenu(ActionEvent actionEvent){
         printEventLog(actionEvent,cmdGoToMenu);
-
-
-        //implementare il cambio di scena verso il menù principale
-
-
+        if(getManager().showScene("mainView")){
+            System.out.println("The main javafx scene has been opened.");
+        }else{
+            System.err.println("The main javafx scene hasn't been opened.");
+        }
     }
 }

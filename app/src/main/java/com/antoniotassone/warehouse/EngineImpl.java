@@ -22,6 +22,7 @@ public class EngineImpl implements Engine{
     public EngineImpl(Views view) throws ArchiveAlreadyLoadedException,ArchiveNotLoadedException,ItemNotValidException{
         this.view = view;
         controller = new LogicWarehouseController(view);
+        controller.loadArchive();
     }
 
     @Override

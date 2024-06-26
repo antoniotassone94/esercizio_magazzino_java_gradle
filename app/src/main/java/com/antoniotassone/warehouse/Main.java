@@ -1,35 +1,32 @@
 package com.antoniotassone.warehouse;
 
+import com.antoniotassone.views.SceneManager;
+import com.antoniotassone.views.SceneWarehouseManager;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.net.URL;
 
 public class Main extends Application{
     @Override
     public void start(Stage stage){
-        URL url = getClass().getResource("/com/antoniotassone/warehouse/fxml/main_view.fxml");
-        if(url == null){
-            System.err.println("The file fxml wasn't loaded correctly.");
-            System.exit(-1);
-        }
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(url);
-        Parent root = null;
+        SceneManager manager = new SceneWarehouseManager(stage);
+        String mainPath = "/com/antoniotassone/warehouse/fxml/main_view.fxml";
+        String variationsPath = "/com/antoniotassone/warehouse/fxml/variations_view.fxml";
         try{
-            root = loader.load();
+            manager.loadScene(mainPath,"mainView");
+            manager.loadScene(variationsPath,"variationsView");
         }catch(IOException exception){
             exception.printStackTrace();
             System.exit(-1);
         }
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Warehouse manager");
-        stage.setResizable(false);
-        stage.show();
+        if(manager.showScene("mainView")){
+            stage.setTitle("Warehouse manager");
+            stage.setResizable(false);
+            stage.show();
+        }else{
+            System.err.println("Failed to load main scene of the application.");
+            System.exit(-1);
+        }
     }
 
     public static void main(String[] args){

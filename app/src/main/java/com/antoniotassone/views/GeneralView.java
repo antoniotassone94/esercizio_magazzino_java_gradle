@@ -4,9 +4,21 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
 public abstract class GeneralView{
-    public GeneralView(){}
+    private SceneManager manager;
 
-    public void printEventLog(ActionEvent actionEvent,Button button){
+    public GeneralView(){
+        manager = null;
+    }
+
+    public SceneManager getManager(){
+        return manager;
+    }
+
+    public void setManager(SceneManager manager){
+        this.manager = manager;
+    }
+
+    public void printEventLog(ActionEvent actionEvent, Button button){
         String className = actionEvent.getSource().getClass().getName();
         String[] details = className.split("[.]");
         String specific = details[details.length - 1];
