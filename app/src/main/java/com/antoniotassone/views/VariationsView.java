@@ -1,8 +1,12 @@
 package com.antoniotassone.views;
 
+import com.antoniotassone.exceptions.ArchiveNotLoadedException;
+import com.antoniotassone.exceptions.ItemNotValidException;
 import com.antoniotassone.models.Items;
 import com.antoniotassone.models.Variations;
 import com.antoniotassone.warehouse.Engine;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import java.util.Calendar;
+import java.util.List;
 
 public class VariationsView extends GeneralView{
     private Engine engine;
@@ -54,7 +59,21 @@ public class VariationsView extends GeneralView{
             lblName.setText(item.getName());
             lblDescription.setText(item.getDescription());
             lblPrice.setText(String.valueOf(item.getPrice()));
-            //
+            columnDate.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+            columnQuantity.setCellValueFactory(cellData -> cellData.getValue().quantityProperty().asObject());
+            List<Variations> variations;
+            try{
+                variations = engine.getController().getFullWarehouse().getVariations(item);
+            }catch(ItemNotValidException | ArchiveNotLoadedException exception){
+                exception.printStackTrace();
+                variations = null;
+            }
+            if(variations != null){
+                ObservableList<Variations> rows = FXCollections.observableList(variations);
+                tableWarehouse.getItems().clear();
+                tableWarehouse.getItems().addAll(rows);
+                tableWarehouse.getSelectionModel().setCellSelectionEnabled(false);
+            }
         }
     }
 
